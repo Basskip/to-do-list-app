@@ -5,9 +5,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700&display=swap" rel="stylesheet">
     <title>Todo List by Basskip</title>
 </head>
 <body>
+    <div id="container">
+        <nav>
+            <ul id="projects">
+                <li class="project-nav">Default</li>
+                <li class="project-nav">Shopping</li>
+                <li class="project-nav">Errands</li>
+            </ul>
+        </nav>
+        <div id="task-area">
+            <figure>
+                <figcaption>Default</figcaption>
+                <ul id="projects-list">
+                    <li>
+                        <div class="task">
+                            <div class="text">
+                                <div class="title">Bring in the washing</div>
+                                <div class="description">It's going to rain today!</div>
+                            </div>
+                            <div class="date">Today</div>
+                            <div class="priority"></div>
+                            <button type="button" class="complete"></button>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="task">
+                            <div class="text">
+                                <div class="title">Return library books</div>
+                                <div class="description">Almost overdue</div>
+                            </div>
+                            <div class="date">Today</div>
+                            <div class="priority"></div>
+                            <button type="button" class="complete"></button>
+                        </div>
+                    </li>
+                </ul>
+            </figure>
+        </div>
+    </div>
     <script src="main.js"></script>
 </body>
 </html>
