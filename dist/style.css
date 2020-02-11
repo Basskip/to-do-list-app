@@ -13,6 +13,15 @@
 nav {
 }
 
+ul {
+    padding: 0;
+}
+
+figure {
+    margin: 0;
+    padding: 0;
+}
+
 #projects {
     height: 100%;
 }
@@ -29,16 +38,37 @@ nav {
     border: 1px solid black;
 }
 
-#projects-list {
+.tasks-list {
     list-style: none;
     padding: 0;
 }
 
 figcaption {
     font-size: 20px;
+    display: inline-block;
+}
+
+.delete-button {
+    border-radius: 100%;
+    border: none;
+    display: inline-block;
+    font-size: 12px;
+    line-height: 12px;
 }
 
 /* Task */
+
+.priority-high {
+    background-color: #9b6e6e;
+}
+
+.priority-medium {
+    background-color: #ccce4e;
+}
+
+.priority-low {
+    background-color: #318831;
+}
 
 .task {
     display: flex;
@@ -46,8 +76,6 @@ figcaption {
 
     margin: 2px 0;
     padding: 5px;
-
-    background-color: #c9c9c9;
 }
 
 .text {
@@ -64,4 +92,12 @@ figcaption {
 
     border-radius: 100%;
     border: none;
+}
+
+.button-edit {
+    display: block;
+}
+
+.condensed>*:nth-child(4) {
+    display: none;
 }
