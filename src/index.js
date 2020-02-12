@@ -3,11 +3,19 @@ import format from 'date-fns';
 
 const task = (title, description, dueDate, priority) => {
 
+    function update(title, description, dueDate, priority) {
+        this.title = title;
+        this.description = description;
+        this.dueDate = dueDate;
+        this.priority = priority;
+    }
+
     return {
         title,
         description,
         dueDate,
         priority,
+        update,
     }
 };
 
@@ -18,6 +26,10 @@ const project = (title) => {
         tasks.push(task(title, description, dueDate, priority));
     }
 
+    function addExistingTask(task) {
+        tasks.push(task);
+    }
+
     function removeTask(task) {
         const index = tasks.indexOf(task);
         if (index > -1) {
@@ -25,11 +37,17 @@ const project = (title) => {
         }
     }
 
+    function containsTask(task) {
+        return tasks.includes(task);
+    }
+
     return {
         title,
         tasks,
         addTask,
         removeTask,
+        containsTask,
+        addExistingTask,
     }
 };
 
@@ -61,9 +79,32 @@ const projectManager = () => {
         this.onChange();
     }
 
+    function editTask(task, title, description, priority, date, projectID) {
+        let current = whichProject(task);
+        task.update(title, description, date, priority);
+
+        if (projectID != current) {
+            projects[current].removeTask(task);
+            projects[projectID].addExistingTask(task);
+        }
+
+        this.onChange();
+    }
+
     function addTaskToProject(title, description, date, priority, projectID) {
         getProject(projectID).addTask(title, description, date, priority);
         this.onChange();
+    }
+
+    function whichProject(task) {
+        for (let index = 0; index < projects.length; index++) {
+            const proj = projects[index];    
+            if (proj.containsTask(task)) {
+                return index;
+            }
+        }
+
+        return -1;
     }
 
 
@@ -75,6 +116,7 @@ const projectManager = () => {
         deleteTask,
         addTaskToProject,
         deleteProject,
+        editTask,
     }
 };
 
@@ -92,8 +134,8 @@ const controller = (model, view) => {
         model.addTaskToProject(title, description, priority, date, projectID);
     }
 
-    function handleEditTask() {
-
+    function handleEditTask(task, title, description, priority, date, projectID) {
+        model.editTask(task, title, description, priority, date, projectID);
     }
 
     function handleAddProject(name) {

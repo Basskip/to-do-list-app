@@ -16,7 +16,7 @@ export default function displayController(element) {
     let _projectButton = document.getElementById('project-button');
     _projectButton.addEventListener('click', () => {
         let title = window.prompt("New project name", "");
-        if (title != "") {
+        if (title != "" && title != null) {
             handleAddProject(title);
         }
     });
@@ -72,7 +72,9 @@ export default function displayController(element) {
         deleteButton.textContent = 'x';
         deleteButton.classList.add('delete-button');
         deleteButton.addEventListener('click', event => {
-            handleDeleteProject(parseInt(event.target.parentElement.dataset.project));
+            if (window.confirm(`Delete project '${event.target.previousSibling.textContent}'?`)) {
+                handleDeleteProject(parseInt(event.target.parentElement.dataset.project));
+            }
         });
         return deleteButton;
     }
@@ -115,9 +117,9 @@ export default function displayController(element) {
         let button = document.createElement("button");
         button.type = "button";
         button.classList.add("complete");
-        
+
         function handleEvent(task) {
-            return function(e) {
+            return function (e) {
                 handleCompleteTask(task);
             };
         }
@@ -130,10 +132,67 @@ export default function displayController(element) {
         editButton.textContent = "Edit";
         editButton.classList.add("button-edit");
 
+        function handleEdit(task) {
+            return function (e) {
+                e.stopPropagation();
+                _renderEdit(e.target.parentElement, task);
+            }
+        }
+        editButton.addEventListener('click', handleEdit(task));
+
         taskDiv.appendChild(editButton);
 
         return taskDiv;
     }
+
+    function _renderEdit(node, task) {
+        while (node.lastChild) {
+            node.removeChild(node.lastChild);
+        }
+
+        node.classList.add('edit');
+
+        let title = document.createElement('input');
+        title.type = 'text';
+        title.value = task.title;
+
+        let description = document.createElement('input');
+        description.type = 'text';
+        description.value = task.description;
+
+        let priority = _priority.cloneNode(true);
+        priority.value = task.priority;
+
+        let project = _project.cloneNode(true);
+        project.value = node.closest('figure').dataset.project;
+
+        let date = _date.cloneNode(true);
+        date.value = task.dueDate;
+
+        let save = document.createElement('button');
+        save.type = 'button';
+        save.textContent = 'Save';
+
+        node.appendChild(title);
+        node.appendChild(description);
+        node.appendChild(priority);
+        node.appendChild(project);
+        node.appendChild(date);
+        node.appendChild(save);
+
+        const clickOutside = (event) => {
+            console.log(node);
+            console.log(event.target);
+            if (!node.contains(event.target) || event.target == save) {
+                handleEditTask(task, title.value, description.value, priority.value, date.value, project.value);
+                document.removeEventListener('click', clickOutside);
+            }
+        }
+
+        document.addEventListener('click', clickOutside);
+    }
+
+
 
     function bindCompleteTask(handler) {
         handleCompleteTask = handler;
