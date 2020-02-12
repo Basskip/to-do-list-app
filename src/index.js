@@ -1,5 +1,4 @@
 import displayController from "./display-controller";
-import format from 'date-fns';
 
 const task = (title, description, dueDate, priority) => {
 
@@ -98,13 +97,34 @@ const projectManager = () => {
 
     function whichProject(task) {
         for (let index = 0; index < projects.length; index++) {
-            const proj = projects[index];    
+            const proj = projects[index];
             if (proj.containsTask(task)) {
                 return index;
             }
         }
 
         return -1;
+    }
+
+    function saveProjects() {
+        if (storageAvailable('localStorage')) {
+            localStorage.setItem('savedProjects', JSON.stringify(projects));
+        }
+    }
+
+    function loadProjects() {
+        if (localStorage.getItem('savedProjects') != null) {
+            let projParams = JSON.parse(localStorage.getItem('savedProjects'));
+            projParams.forEach(proj => {
+                let newProj = project(proj.title);
+                proj.tasks.forEach(t => {
+                    newProj.addTask(t.title, t.description, t.dueDate, t.priority);
+                })
+                projects.push(newProj);
+            })
+        } else {
+            addProject("Default");
+        }
     }
 
 
@@ -117,15 +137,43 @@ const projectManager = () => {
         addTaskToProject,
         deleteProject,
         editTask,
+        saveProjects,
+        loadProjects,
     }
 };
+
+function storageAvailable(type) {
+    var storage;
+    try {
+        storage = window[type];
+        var x = '__storage_test__';
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+    }
+    catch (e) {
+        return e instanceof DOMException && (
+            // everything except Firefox
+            e.code === 22 ||
+            // Firefox
+            e.code === 1014 ||
+            // test name field too, because code might not be present
+            // everything except Firefox
+            e.name === 'QuotaExceededError' ||
+            // Firefox
+            e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+            // acknowledge QuotaExceededError only if there's something already stored
+            (storage && storage.length !== 0);
+    }
+}
 
 const controller = (model, view) => {
 
     function onModelChange() {
         view.renderProjects(model.projects);
+        model.saveProjects();
     }
-    
+
     function handleDeleteTask(task) {
         model.deleteTask(task);
     }
@@ -154,10 +202,7 @@ const controller = (model, view) => {
     view.bindAddProject(handleAddProject);
     view.bindDeleteProject(handleDeleteProject);
 
-    model.addProject("Default");
-
-    model.addTaskToProject("Do your JavaScript course", "Keep improving to get a job", "Today", "high", 0);
-    model.addTaskToProject("Play some dota", "Have fun", "Tonight", "low", 0);
+    model.loadProjects();
     view.renderProjects(model.projects);
 };
 
