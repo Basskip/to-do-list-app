@@ -102,45 +102,61 @@ export default function displayController(element) {
         let taskDiv = document.createElement("div");
         taskDiv.classList.add("task");
 
-        let text = document.createElement("div");
-        text.classList.add("text");
-        taskDiv.appendChild(text);
+        let summary = document.createElement("div");
+        summary.classList.add("summary");
+        let detail = document.createElement("div");
+        detail.classList.add("detail");
 
-        text.appendChild(_createElement("div", "title", task.title));
+        summary.appendChild(_createElement("div", "title", task.title));
 
-        text.appendChild(_createElement("div", "description", task.description));
+        detail.appendChild(_createElement("div", "description", task.description));
 
-        taskDiv.appendChild(_createElement("div", "date", task.dueDate));
+        summary.appendChild(_createElement("div", "date", task.dueDate));
 
         taskDiv.classList.add(`priority-${task.priority}`);
 
         let button = document.createElement("button");
         button.type = "button";
+        button.textContent = "✓";
         button.classList.add("complete");
 
-        function handleEvent(task) {
-            return function (e) {
-                handleCompleteTask(task);
-            };
-        }
-        button.addEventListener('click', handleEvent(task));
+        button.addEventListener('click', event => {
+            handleCompleteTask(task);
+        });
 
-        taskDiv.appendChild(button);
+        summary.appendChild(button);
 
         let editButton = document.createElement("button");
         editButton.type = "button";
         editButton.textContent = "Edit";
         editButton.classList.add("button-edit");
 
-        function handleEdit(task) {
-            return function (e) {
-                e.stopPropagation();
-                _renderEdit(e.target.parentElement, task);
-            }
-        }
-        editButton.addEventListener('click', handleEdit(task));
+        editButton.addEventListener('click', event => {
+            event.stopPropagation();
+            _renderEdit(event.target.closest('.task'), task);
+        });
 
-        taskDiv.appendChild(editButton);
+        detail.appendChild(editButton);
+
+        taskDiv.appendChild(summary);
+        taskDiv.appendChild(detail);
+
+        let expandButton = document.createElement("button");
+        expandButton.type = "button";
+        expandButton.textContent = "+";
+        expandButton.classList.add("toggle-expand");
+
+        expandButton.addEventListener('click', event => {
+            if (taskDiv.classList.contains("expanded")) {
+                taskDiv.classList.remove("expanded");
+                expandButton.textContent = "+";
+            } else {
+                taskDiv.classList.add("expanded");
+                expandButton.textContent = "-";
+            }
+        });
+
+        summary.appendChild(expandButton);
 
         return taskDiv;
     }
